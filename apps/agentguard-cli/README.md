@@ -40,7 +40,7 @@ agentguard is an MCP policy proxy for agents that touch production. It sits betw
 
 No LLM calls. No phone-home. No account. MIT.
 
-Two install paths, one policy engine: the **MCP proxy** (`npx @agentwares/agentguard`, stdio + Streamable HTTP, multiple upstreams) and the **SDK/middleware** ([`@agentwares/agentguard-sdk`](../../packages/agentguard-sdk)) for OpenAI Agents SDK, LangChain or plain-function tools that never go through MCP.
+Two install paths, one policy engine: the **MCP proxy** (`npx @agentwares/agentguard`, stdio + Streamable HTTP, multiple upstreams) and the **SDK/middleware** ([`@agentwares/agentguard-sdk`](https://github.com/agentwares/agentguard/tree/main/packages/agentguard-sdk#readme)) for OpenAI Agents SDK, LangChain or plain-function tools that never go through MCP.
 
 ## Install
 
@@ -137,19 +137,19 @@ Run identity: `X-Run-Id` header (HTTP) → `_meta.runId` on the call → session
 
 ## Commands
 
-| Command                                                                                                                         | What it does                                                                                               |
-| ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `agentguard init [--client path] [--all] [--no-probe] [--mode enforce] [--undo]`                                                | generate the policy, rewrite the client config (project-level by default)                                  |
-| `agentguard proxy [--http --port 8788] [--agent name] [--run-id id] [--mode m]`                                                 | run the proxy (stdio default)                                                                              |
-| `agentguard report [--run id \| --all] [--json]`                                                                                | what this run did / would have destroyed / spent; where it was halted; chain status                        |
-| `agentguard diff [--run id]`                                                                                                    | mutation diff of faked writes                                                                              |
-| `agentguard verify [audit.jsonl]`                                                                                               | recompute the hash chain; exit 1 on the first break                                                        |
-| `agentguard status [--run id]`                                                                                                  | counters vs caps, kill state, pending approvals, running HTTP proxy                                        |
-| `agentguard tools [--json]`                                                                                                     | every exposed tool with class, verb, upstream and the reason                                               |
-| `agentguard kill [reason]` / `agentguard resume`                                                                                | halt everything now / clear it                                                                             |
-| `agentguard approvals [--all]` / `approve <id>` / `deny <id> [--note …]`                                                        | the approval queue                                                                                         |
-| `agentguard key create <agent> [--allow p]… [--deny p] [--writes n] [--spend n] [--mode m]` / `key list` / `key revoke <agent>` | scoped credentials                                                                                         |
-| `agentguard permission-diff [--base ref] [--head ref] [--fail-on-widen]`                                                        | which config changes widen agent permissions (also a [GitHub Action](../../assets/permission-diff-action)) |
+| Command                                                                                                                         | What it does                                                                                                                              |
+| ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `agentguard init [--client path] [--all] [--no-probe] [--mode enforce] [--undo]`                                                | generate the policy, rewrite the client config (project-level by default)                                                                 |
+| `agentguard proxy [--http --port 8788] [--agent name] [--run-id id] [--mode m]`                                                 | run the proxy (stdio default)                                                                                                             |
+| `agentguard report [--run id \| --all] [--json]`                                                                                | what this run did / would have destroyed / spent; where it was halted; chain status                                                       |
+| `agentguard diff [--run id]`                                                                                                    | mutation diff of faked writes                                                                                                             |
+| `agentguard verify [audit.jsonl]`                                                                                               | recompute the hash chain; exit 1 on the first break                                                                                       |
+| `agentguard status [--run id]`                                                                                                  | counters vs caps, kill state, pending approvals, running HTTP proxy                                                                       |
+| `agentguard tools [--json]`                                                                                                     | every exposed tool with class, verb, upstream and the reason                                                                              |
+| `agentguard kill [reason]` / `agentguard resume`                                                                                | halt everything now / clear it                                                                                                            |
+| `agentguard approvals [--all]` / `approve <id>` / `deny <id> [--note …]`                                                        | the approval queue                                                                                                                        |
+| `agentguard key create <agent> [--allow p]… [--deny p] [--writes n] [--spend n] [--mode m]` / `key list` / `key revoke <agent>` | scoped credentials                                                                                                                        |
+| `agentguard permission-diff [--base ref] [--head ref] [--fail-on-widen]`                                                        | which config changes widen agent permissions (also a [GitHub Action](https://github.com/agentwares/agentguard/tree/main/permission-diff)) |
 
 HTTP control endpoints (token in `.agentguard/http.json`): `GET /health`, `GET /status?run=`, `POST /kill`, `POST /resume`, `GET|POST /approve/:id`, `/deny/:id`, `GET /approvals`.
 
@@ -183,6 +183,6 @@ node dist/cli.js report && node dist/cli.js diff && node dist/cli.js verify
 
 ## Related
 
-- [`@agentwares/agentguard-sdk`](../../packages/agentguard-sdk) — the same engine for OpenAI Agents SDK / LangChain / plain functions, plus the guarded `fetch` for LLM spend.
-- [`@agentwares/agentguard-core`](../../packages/agentguard-core) — the Web-standard policy engine (bring your own stores).
-- [permission-diff GitHub Action](../../assets/permission-diff-action) — comments on PRs that widen `agentguard.yaml`, `.claude/settings.json` or `mcp.json`.
+- [`@agentwares/agentguard-sdk`](https://github.com/agentwares/agentguard/tree/main/packages/agentguard-sdk#readme) — the same engine for OpenAI Agents SDK / LangChain / plain functions, plus the guarded `fetch` for LLM spend.
+- [`@agentwares/agentguard-core`](https://github.com/agentwares/agentguard/tree/main/packages/agentguard-core#readme) — the Web-standard policy engine (bring your own stores).
+- [permission-diff GitHub Action](https://github.com/agentwares/agentguard/tree/main/permission-diff) — comments on PRs that widen `agentguard.yaml`, `.claude/settings.json` or `mcp.json`.

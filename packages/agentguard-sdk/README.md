@@ -1,6 +1,6 @@
 # @agentwares/agentguard-sdk
 
-The [agentguard](../../apps/agentguard-cli) policy engine for tool calls that never go through MCP — OpenAI Agents SDK, LangChain, or plain functions — plus a guarded `fetch` that puts a **hard dollar limit on LLM token spend** across OpenAI, Anthropic and Gemini. Same `agentguard.yaml`, same caps, kill switch, approvals, dry-run and hash-chained audit log as the proxy; the CLI (`agentguard report`, `kill`, `approve`, `verify`) works on the same files.
+The [agentguard](https://github.com/agentwares/agentguard/tree/main/apps/agentguard-cli#readme) policy engine for tool calls that never go through MCP — OpenAI Agents SDK, LangChain, or plain functions — plus a guarded `fetch` that puts a **hard dollar limit on LLM token spend** across OpenAI, Anthropic and Gemini. Same `agentguard.yaml`, same caps, kill switch, approvals, dry-run and hash-chained audit log as the proxy; the CLI (`agentguard report`, `kill`, `approve`, `verify`) works on the same files.
 
 ```sh
 npm i @agentwares/agentguard-sdk

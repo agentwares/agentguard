@@ -43,4 +43,4 @@ Example comment:
 
 Inputs: `github-token` (default `${{ github.token }}`), `paths` (extra files), `fail-on-widen`, `version` (agentguard npm version), `comment` (`false` to only print). Outputs: `widen` (count), `markdown-file`.
 
-Locally: `npx @agentwares/agentguard permission-diff --base main --head HEAD [--fail-on-widen]` — the same diff the Action posts. The differ lives in [`@agentwares/agentguard-core`](../../packages/agentguard-core) (`diffPermissionFile`, `renderPermissionDiffMarkdown`) and is tested against a fixture PR in `apps/agentguard-cli/src/commands/commands.test.ts`.
+Locally: `npx @agentwares/agentguard permission-diff --base main --head HEAD [--fail-on-widen]` — the same diff the Action posts. The differ lives in [`@agentwares/agentguard-core`](https://github.com/agentwares/agentguard/tree/main/packages/agentguard-core#readme) (`diffPermissionFile`, `renderPermissionDiffMarkdown`) and is tested against a fixture PR in `apps/agentguard-cli/src/commands/commands.test.ts`.

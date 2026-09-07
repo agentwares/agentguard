@@ -1,6 +1,6 @@
 # @agentwares/agentguard-core
 
-The policy engine behind [`agentguard`](../../apps/agentguard-cli) (MCP proxy) and [`@agentwares/agentguard-sdk`](../agentguard-sdk) (middleware). Web-standard (`crypto.subtle`, no `fs`) so the same engine runs on Node, Workers and the hosted tier; Node file stores live under `@agentwares/agentguard-core/node`.
+The policy engine behind [`agentguard`](https://github.com/agentwares/agentguard/tree/main/apps/agentguard-cli#readme) (MCP proxy) and [`@agentwares/agentguard-sdk`](https://github.com/agentwares/agentguard/tree/main/packages/agentguard-sdk#readme) (middleware). Web-standard (`crypto.subtle`, no `fs`) so the same engine runs on Node, Workers and the hosted tier; Node file stores live under `@agentwares/agentguard-core/node`.
 
 ```ts
 import { Guard, loadPolicyFromYaml } from "@agentwares/agentguard-core";
