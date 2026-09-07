@@ -1,0 +1,54 @@
+{
+  "name": "@agentwares/agentguard-sdk",
+  "version": "0.1.1",
+  "description": "agentguard for tool calls that bypass MCP: wrap OpenAI Agents SDK, LangChain or plain function tools with the same policy engine (spend caps, approvals, kill switch, dry-run, loop breaker, audit log) and cap LLM spend with a guarded fetch.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agentwares/agentguard",
+    "directory": "packages/agentguard-sdk"
+  },
+  "keywords": [
+    "agentguard",
+    "openai-agents",
+    "langchain",
+    "ai-agents",
+    "spend-limit",
+    "kill-switch",
+    "guardrails",
+    "middleware"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@agentwares/agentguard-core": "workspace:^"
+  },
+  "homepage": "https://github.com/agentwares/agentguard/tree/main/packages/agentguard-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/agentwares/agentguard/issues"
+  }
+}

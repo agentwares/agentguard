@@ -1,0 +1,1874 @@
+{
+  "recordedAt": "2026-09-02T11:22:55.307Z",
+  "upstream": "crm",
+  "tools": [
+    {
+      "name": "crm_list_contacts",
+      "description": "List every contact in the CRM. Read-only; returns id, name, email and updated_at.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "default": 100,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "contacts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "updated_at": {
+                  "type": "string"
+                }
+              },
+              "required": ["id", "name", "email", "updated_at"],
+              "additionalProperties": false
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": ["contacts", "total"],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "crm_get_contact",
+      "description": "Fetch one contact by id. Read-only; NOT_FOUND when the id does not exist.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": ["id"],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "name", "email", "updated_at"],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "crm_search",
+      "description": "Search contacts by name or email substring. Returns matching contacts (no annotations on purpose).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          }
+        },
+        "required": ["query"],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "crm_create_contact",
+      "description": "Create a contact. Returns the new id and created_at timestamp.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": ["name", "email"],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "created_at"],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "crm_update_contact",
+      "description": "Update fields on a contact. Returns the id and updated_at; NOT_FOUND for unknown ids.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": ["id", "fields"],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "updated_at"],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "crm_delete_contact",
+      "description": "Permanently delete a contact. Irreversible. Returns { deleted, id }.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": ["id"],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "deleted": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": ["deleted", "id"],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "crm_send_email",
+      "description": "Send an email to a contact through the CRM. Returns the message id and sent_at.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "to": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          }
+        },
+        "required": ["to", "subject", "body"],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "message_id": {
+            "type": "string"
+          },
+          "sent_at": {
+            "type": "string"
+          }
+        },
+        "required": ["message_id", "sent_at"],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "crm_charge_card",
+      "description": "Charge a customer's card on file (amount in cents). Returns the charge id and amount_usd.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string"
+          },
+          "amount_cents": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "currency": {
+            "default": "usd",
+            "type": "string"
+          }
+        },
+        "required": ["customer_id", "amount_cents"],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "charge_id": {
+            "type": "string"
+          },
+          "amount_usd": {
+            "type": "number"
+          }
+        },
+        "required": ["charge_id", "amount_usd"],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "crm_frobnicate",
+      "description": "A tool with no annotations and no recognizable verb — exists to test `unknown` handling.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "crm_fail",
+      "description": "Always returns a structured UPSTREAM_ERROR result, for error-path tests.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    }
+  ],
+  "calls": [
+    {
+      "tool": "crm_list_contacts",
+      "args": {
+        "limit": 10
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"contacts\": [\n    {\n      \"id\": \"c_1\",\n      \"name\": \"Ada Lovelace\",\n      \"email\": \"ada@example.com\",\n      \"updated_at\": \"2026-01-01T00:00:00.000Z\"\n    },\n    {\n      \"id\": \"c_2\",\n      \"name\": \"Grace Hopper\",\n      \"email\": \"grace@example.com\",\n      \"updated_at\": \"2026-01-01T00:00:00.000Z\"\n    },\n    {\n      \"id\": \"c_3\",\n      \"name\": \"Linus Torvalds\",\n      \"email\": \"linus@example.com\",\n      \"updated_at\": \"2026-01-01T00:00:00.000Z\"\n    }\n  ],\n  \"total\": 3\n}"
+          }
+        ],
+        "structuredContent": {
+          "contacts": [
+            {
+              "id": "c_1",
+              "name": "Ada Lovelace",
+              "email": "ada@example.com",
+              "updated_at": "2026-01-01T00:00:00.000Z"
+            },
+            {
+              "id": "c_2",
+              "name": "Grace Hopper",
+              "email": "grace@example.com",
+              "updated_at": "2026-01-01T00:00:00.000Z"
+            },
+            {
+              "id": "c_3",
+              "name": "Linus Torvalds",
+              "email": "linus@example.com",
+              "updated_at": "2026-01-01T00:00:00.000Z"
+            }
+          ],
+          "total": 3
+        }
+      }
+    },
+    {
+      "tool": "crm_get_contact",
+      "args": {
+        "id": "c_1"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_1\",\n  \"name\": \"Ada Lovelace\",\n  \"email\": \"ada@example.com\",\n  \"updated_at\": \"2026-01-01T00:00:00.000Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_1",
+          "name": "Ada Lovelace",
+          "email": "ada@example.com",
+          "updated_at": "2026-01-01T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Demo Person",
+        "email": "demo@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0001\",\n  \"created_at\": \"2026-09-02T11:22:55.298Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0001",
+          "created_at": "2026-09-02T11:22:55.298Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_update_contact",
+      "args": {
+        "id": "c_1",
+        "fields": {
+          "name": "Ada L."
+        }
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_1\",\n  \"updated_at\": \"2026-09-02T11:22:55.300Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_1",
+          "updated_at": "2026-09-02T11:22:55.300Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_delete_contact",
+      "args": {
+        "id": "c_2"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"deleted\": true,\n  \"id\": \"c_2\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "deleted": true,
+          "id": "c_2"
+        }
+      }
+    },
+    {
+      "tool": "crm_send_email",
+      "args": {
+        "to": "ada@example.com",
+        "subject": "Hi",
+        "body": "Hello from the demo agent"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"message_id\": \"msg_0002\",\n  \"sent_at\": \"2026-09-02T11:22:55.302Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "message_id": "msg_0002",
+          "sent_at": "2026-09-02T11:22:55.302Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_charge_card",
+      "args": {
+        "customer_id": "c_1",
+        "amount_cents": 1200,
+        "currency": "usd"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"charge_id\": \"ch_0003\",\n  \"amount_usd\": 12\n}"
+          }
+        ],
+        "structuredContent": {
+          "charge_id": "ch_0003",
+          "amount_usd": 12
+        }
+      }
+    },
+    {
+      "tool": "crm_update_contact",
+      "args": {
+        "id": "c_3",
+        "fields": {
+          "name": "Same Thing"
+        }
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_3\",\n  \"updated_at\": \"2026-09-02T11:22:55.303Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_3",
+          "updated_at": "2026-09-02T11:22:55.303Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 0",
+        "email": "bulk0@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0004\",\n  \"created_at\": \"2026-09-02T11:22:55.304Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0004",
+          "created_at": "2026-09-02T11:22:55.304Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 1",
+        "email": "bulk1@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0005\",\n  \"created_at\": \"2026-09-02T11:22:55.304Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0005",
+          "created_at": "2026-09-02T11:22:55.304Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 2",
+        "email": "bulk2@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0006\",\n  \"created_at\": \"2026-09-02T11:22:55.304Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0006",
+          "created_at": "2026-09-02T11:22:55.304Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 3",
+        "email": "bulk3@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0007\",\n  \"created_at\": \"2026-09-02T11:22:55.304Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0007",
+          "created_at": "2026-09-02T11:22:55.304Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 4",
+        "email": "bulk4@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0008\",\n  \"created_at\": \"2026-09-02T11:22:55.304Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0008",
+          "created_at": "2026-09-02T11:22:55.304Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 5",
+        "email": "bulk5@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0009\",\n  \"created_at\": \"2026-09-02T11:22:55.304Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0009",
+          "created_at": "2026-09-02T11:22:55.304Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 6",
+        "email": "bulk6@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000a\",\n  \"created_at\": \"2026-09-02T11:22:55.304Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000a",
+          "created_at": "2026-09-02T11:22:55.304Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 7",
+        "email": "bulk7@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000b\",\n  \"created_at\": \"2026-09-02T11:22:55.304Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000b",
+          "created_at": "2026-09-02T11:22:55.304Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 8",
+        "email": "bulk8@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000c\",\n  \"created_at\": \"2026-09-02T11:22:55.304Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000c",
+          "created_at": "2026-09-02T11:22:55.304Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 9",
+        "email": "bulk9@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000d\",\n  \"created_at\": \"2026-09-02T11:22:55.304Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000d",
+          "created_at": "2026-09-02T11:22:55.304Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 10",
+        "email": "bulk10@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000e\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000e",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 11",
+        "email": "bulk11@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000f\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000f",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 12",
+        "email": "bulk12@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000g\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000g",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 13",
+        "email": "bulk13@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000h\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000h",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 14",
+        "email": "bulk14@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000i\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000i",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 15",
+        "email": "bulk15@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000j\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000j",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 16",
+        "email": "bulk16@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000k\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000k",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 17",
+        "email": "bulk17@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000l\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000l",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 18",
+        "email": "bulk18@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000m\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000m",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 19",
+        "email": "bulk19@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000n\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000n",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 20",
+        "email": "bulk20@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000o\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000o",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 21",
+        "email": "bulk21@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000p\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000p",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 22",
+        "email": "bulk22@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000q\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000q",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 23",
+        "email": "bulk23@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000r\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000r",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 24",
+        "email": "bulk24@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000s\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000s",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 25",
+        "email": "bulk25@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000t\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000t",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 26",
+        "email": "bulk26@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000u\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000u",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 27",
+        "email": "bulk27@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000v\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000v",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 28",
+        "email": "bulk28@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000w\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000w",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 29",
+        "email": "bulk29@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000x\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000x",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 30",
+        "email": "bulk30@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000y\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000y",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 31",
+        "email": "bulk31@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_000z\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_000z",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 32",
+        "email": "bulk32@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0010\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0010",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 33",
+        "email": "bulk33@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0011\",\n  \"created_at\": \"2026-09-02T11:22:55.305Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0011",
+          "created_at": "2026-09-02T11:22:55.305Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 34",
+        "email": "bulk34@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0012\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0012",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 35",
+        "email": "bulk35@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0013\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0013",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 36",
+        "email": "bulk36@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0014\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0014",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 37",
+        "email": "bulk37@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0015\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0015",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 38",
+        "email": "bulk38@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0016\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0016",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 39",
+        "email": "bulk39@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0017\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0017",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 40",
+        "email": "bulk40@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0018\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0018",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 41",
+        "email": "bulk41@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_0019\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_0019",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 42",
+        "email": "bulk42@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001a\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001a",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 43",
+        "email": "bulk43@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001b\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001b",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 44",
+        "email": "bulk44@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001c\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001c",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 45",
+        "email": "bulk45@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001d\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001d",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 46",
+        "email": "bulk46@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001e\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001e",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 47",
+        "email": "bulk47@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001f\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001f",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 48",
+        "email": "bulk48@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001g\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001g",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 49",
+        "email": "bulk49@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001h\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001h",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 50",
+        "email": "bulk50@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001i\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001i",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 51",
+        "email": "bulk51@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001j\",\n  \"created_at\": \"2026-09-02T11:22:55.306Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001j",
+          "created_at": "2026-09-02T11:22:55.306Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 52",
+        "email": "bulk52@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001k\",\n  \"created_at\": \"2026-09-02T11:22:55.307Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001k",
+          "created_at": "2026-09-02T11:22:55.307Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 53",
+        "email": "bulk53@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001l\",\n  \"created_at\": \"2026-09-02T11:22:55.307Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001l",
+          "created_at": "2026-09-02T11:22:55.307Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 54",
+        "email": "bulk54@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001m\",\n  \"created_at\": \"2026-09-02T11:22:55.307Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001m",
+          "created_at": "2026-09-02T11:22:55.307Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 55",
+        "email": "bulk55@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001n\",\n  \"created_at\": \"2026-09-02T11:22:55.307Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001n",
+          "created_at": "2026-09-02T11:22:55.307Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 56",
+        "email": "bulk56@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001o\",\n  \"created_at\": \"2026-09-02T11:22:55.307Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001o",
+          "created_at": "2026-09-02T11:22:55.307Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 57",
+        "email": "bulk57@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001p\",\n  \"created_at\": \"2026-09-02T11:22:55.307Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001p",
+          "created_at": "2026-09-02T11:22:55.307Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 58",
+        "email": "bulk58@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001q\",\n  \"created_at\": \"2026-09-02T11:22:55.307Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001q",
+          "created_at": "2026-09-02T11:22:55.307Z"
+        }
+      }
+    },
+    {
+      "tool": "crm_create_contact",
+      "args": {
+        "name": "Bulk 59",
+        "email": "bulk59@example.com"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"c_001r\",\n  \"created_at\": \"2026-09-02T11:22:55.307Z\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "id": "c_001r",
+          "created_at": "2026-09-02T11:22:55.307Z"
+        }
+      }
+    }
+  ],
+  "expected": {
+    "enforce-caps-loop": {
+      "outcomes": [
+        "crm_list_contacts:ok",
+        "crm_get_contact:ok",
+        "crm_create_contact:ok",
+        "crm_update_contact:ok",
+        "crm_delete_contact:ok",
+        "crm_send_email:ok",
+        "crm_charge_card:ok",
+        "crm_update_contact:ok",
+        "crm_update_contact:ok",
+        "crm_update_contact:halted:LOOP_DETECTED",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:blocked:CAP_EXCEEDED"
+      ],
+      "mutations": [],
+      "halts": ["LOOP_DETECTED", "CAP_EXCEEDED"]
+    },
+    "dry-run": {
+      "outcomes": [
+        "crm_list_contacts:ok",
+        "crm_get_contact:ok",
+        "crm_create_contact:faked",
+        "crm_update_contact:faked",
+        "crm_delete_contact:faked",
+        "crm_send_email:faked",
+        "crm_charge_card:faked",
+        "crm_update_contact:faked",
+        "crm_update_contact:faked",
+        "crm_update_contact:halted:LOOP_DETECTED",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:faked",
+        "crm_create_contact:blocked:CAP_EXCEEDED"
+      ],
+      "mutations": [
+        "create name=Demo Person",
+        "update id=c_1",
+        "delete id=c_2",
+        "send to=ada@example.com",
+        "spend customer_id=c_1",
+        "update id=c_3",
+        "update id=c_3",
+        "create name=Bulk 0",
+        "create name=Bulk 1",
+        "create name=Bulk 2",
+        "create name=Bulk 3",
+        "create name=Bulk 4",
+        "create name=Bulk 5",
+        "create name=Bulk 6",
+        "create name=Bulk 7",
+        "create name=Bulk 8",
+        "create name=Bulk 9",
+        "create name=Bulk 10",
+        "create name=Bulk 11",
+        "create name=Bulk 12",
+        "create name=Bulk 13",
+        "create name=Bulk 14",
+        "create name=Bulk 15",
+        "create name=Bulk 16",
+        "create name=Bulk 17",
+        "create name=Bulk 18",
+        "create name=Bulk 19",
+        "create name=Bulk 20",
+        "create name=Bulk 21",
+        "create name=Bulk 22",
+        "create name=Bulk 23",
+        "create name=Bulk 24",
+        "create name=Bulk 25",
+        "create name=Bulk 26",
+        "create name=Bulk 27",
+        "create name=Bulk 28",
+        "create name=Bulk 29",
+        "create name=Bulk 30",
+        "create name=Bulk 31",
+        "create name=Bulk 32",
+        "create name=Bulk 33",
+        "create name=Bulk 34",
+        "create name=Bulk 35",
+        "create name=Bulk 36",
+        "create name=Bulk 37",
+        "create name=Bulk 38",
+        "create name=Bulk 39",
+        "create name=Bulk 40",
+        "create name=Bulk 41",
+        "create name=Bulk 42"
+      ],
+      "halts": ["LOOP_DETECTED", "CAP_EXCEEDED"]
+    },
+    "enforce-approval-deletes": {
+      "outcomes": [
+        "crm_list_contacts:ok",
+        "crm_get_contact:ok",
+        "crm_create_contact:ok",
+        "crm_update_contact:ok",
+        "crm_delete_contact:pending:APPROVAL_REQUIRED",
+        "crm_send_email:ok",
+        "crm_charge_card:ok",
+        "crm_update_contact:ok",
+        "crm_update_contact:ok",
+        "crm_update_contact:halted:LOOP_DETECTED",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:ok",
+        "crm_create_contact:blocked:CAP_EXCEEDED"
+      ],
+      "mutations": [],
+      "halts": ["APPROVAL_REQUIRED", "LOOP_DETECTED", "CAP_EXCEEDED"]
+    }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "name": "@agentwares/agentguard",
+  "version": "0.1.1",
+  "description": "MCP policy proxy for AI agents: hard spend limits, destructive-action gating with approvals, a kill switch, scoped credentials, dry-run writes with mutation diffs, loop breaker, blast-radius caps and a hash-chained audit log. No LLM calls, no phone-home, no account.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "agentguard": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "server.json",
+    "llms.txt"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "mcpName": "io.github.agentwares/agentguard",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agentwares/agentguard",
+    "directory": "apps/agentguard-cli"
+  },
+  "homepage": "https://github.com/agentwares/agentguard#readme",
+  "keywords": [
+    "mcp",
+    "mcp-proxy",
+    "model-context-protocol",
+    "ai-agents",
+    "agent-safety",
+    "spend-limit",
+    "kill-switch",
+    "dry-run",
+    "audit-log",
+    "claude-code",
+    "cursor",
+    "guardrails"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "listing": "node scripts/generate-listing.mjs",
+    "conformance": "node scripts/conformance.mjs"
+  },
+  "dependencies": {
+    "@agentwares/agentguard-core": "workspace:^",
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "yaml": "^2.9.0",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@agentwares/mcp-kit": "^0.1.0",
+    "@agentwares/notify": "^0.1.0",
+    "tsx": "^4.23.13"
+  },
+  "bugs": {
+    "url": "https://github.com/agentwares/agentguard/issues"
+  }
+}

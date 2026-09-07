@@ -1,0 +1,11 @@
+# agentguard
+
+> MCP policy proxy for AI agents: hard spend limits, destructive-action gating with approvals, kill switch, scoped agent keys, dry-run writes with mutation diffs, semantic loop breaker, blast-radius caps, hash-chained audit log. CLI `npx @agentwares/agentguard`; SDK `@agentwares/agentguard-sdk`. No LLM calls, no phone-home, no account.
+
+## Links
+
+- [README (install in 60 seconds)](https://github.com/agentwares/agentguard/tree/main/apps/agentguard-cli#readme)
+- [Policy file reference](https://github.com/agentwares/agentguard/tree/main/apps/agentguard-cli#policy)
+- [SDK / middleware](https://github.com/agentwares/agentguard/tree/main/packages/agentguard-sdk#readme)
+- [npm: @agentwares/agentguard](https://www.npmjs.com/package/@agentwares/agentguard)
+- [Permission-diff GitHub Action](https://github.com/agentwares/agentguard/tree/main/permission-diff)
