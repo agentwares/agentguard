@@ -1,0 +1,38 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.agentwares/agentguard",
+  "description": "MCP policy proxy: spend caps, approvals for destructive tools, kill switch, dry-run, audit log.",
+  "version": "0.1.2",
+  "repository": {
+    "url": "https://github.com/agentwares/agentguard",
+    "source": "github",
+    "subfolder": "apps/agentguard-cli"
+  },
+  "title": "agentguard",
+  "websiteUrl": "https://github.com/agentwares/agentguard/tree/main/apps/agentguard-cli",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@agentwares/agentguard",
+      "version": "0.1.2",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "AGENTGUARD_CONFIG",
+          "description": "Path to agentguard.yaml (default ./agentguard.yaml)",
+          "isRequired": false,
+          "format": "filepath"
+        },
+        {
+          "name": "AGENTGUARD_KILL",
+          "description": "Set to 1 to halt every tool call (kill switch)",
+          "isRequired": false
+        }
+      ]
+    }
+  ]
+}

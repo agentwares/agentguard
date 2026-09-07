@@ -1,0 +1,79 @@
+name: "agentguard permission diff"
+description: "Comment on pull requests that widen what an agent may do: agentguard.yaml caps/allowlists, .claude/settings.json permissions, mcp.json servers."
+author: "agentwares"
+branding:
+  icon: "shield"
+  color: "red"
+inputs:
+  github-token:
+    description: "Token used to post the comment (needs pull-requests: write)."
+    default: ${{ github.token }}
+  paths:
+    description: "Comma-separated files to diff in addition to the changed permission files (default: agentguard.yaml, .claude/settings.json, .mcp.json, mcp.json, .cursor/mcp.json, .vscode/mcp.json)."
+    default: ""
+  fail-on-widen:
+    description: "Fail the check when any change widens permissions."
+    default: "false"
+  version:
+    description: "agentguard npm version to run."
+    default: "latest"
+  comment:
+    description: "Post/update the PR comment (set to false to only print the diff)."
+    default: "true"
+outputs:
+  widen:
+    description: "Number of changes that widen permissions."
+    value: ${{ steps.diff.outputs.widen }}
+  markdown-file:
+    description: "Path of the generated markdown comment."
+    value: ${{ steps.diff.outputs.file }}
+runs:
+  using: composite
+  steps:
+    - name: Fetch base ref
+      shell: bash
+      run: git fetch --no-tags --depth=1 origin "${{ github.event.pull_request.base.sha }}" || true
+    - name: Diff permissions
+      id: diff
+      shell: bash
+      env:
+        BASE: ${{ github.event.pull_request.base.sha }}
+        HEAD: ${{ github.event.pull_request.head.sha }}
+        EXTRA_PATHS: ${{ inputs.paths }}
+        VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+        out="$RUNNER_TEMP/agentguard-permission-diff.md"
+        json="$RUNNER_TEMP/agentguard-permission-diff.json"
+        args=(permission-diff --base "$BASE" --head "$HEAD")
+        if [ -n "$EXTRA_PATHS" ]; then args+=(--paths "$EXTRA_PATHS"); fi
+        npx -y "@agentwares/agentguard@$VERSION" "${args[@]}" --format markdown > "$out"
+        npx -y "@agentwares/agentguard@$VERSION" "${args[@]}" --format json > "$json"
+        widen=$(node -e 'const r=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));console.log(r.findings.filter(f=>f.severity==="widen").length)' "$json")
+        echo "widen=$widen" >> "$GITHUB_OUTPUT"
+        echo "file=$out" >> "$GITHUB_OUTPUT"
+        cat "$out"
+    - name: Comment on the pull request
+      if: ${{ inputs.comment == 'true' && github.event_name == 'pull_request' }}
+      uses: actions/github-script@v7
+      env:
+        FILE: ${{ steps.diff.outputs.file }}
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const fs = require("fs");
+          const body = fs.readFileSync(process.env.FILE, "utf8");
+          const marker = "<!-- agentguard-permission-diff -->";
+          const { owner, repo } = context.repo;
+          const issue_number = context.payload.pull_request.number;
+          const comments = await github.rest.issues.listComments({ owner, repo, issue_number, per_page: 100 });
+          const mine = comments.data.find((c) => c.body && c.body.includes(marker));
+          const full = `${marker}\n${body}`;
+          if (mine) await github.rest.issues.updateComment({ owner, repo, comment_id: mine.id, body: full });
+          else await github.rest.issues.createComment({ owner, repo, issue_number, body: full });
+    - name: Fail on widen
+      if: ${{ inputs.fail-on-widen == 'true' && steps.diff.outputs.widen != '0' }}
+      shell: bash
+      run: |
+        echo "::error::${{ steps.diff.outputs.widen }} change(s) widen agent permissions"
+        exit 1

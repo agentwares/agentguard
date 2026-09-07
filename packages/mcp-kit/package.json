@@ -1,0 +1,61 @@
+{
+  "name": "@agentwares/mcp-kit",
+  "version": "0.1.0",
+  "description": "Expose any package as an MCP server: one defineTool definition served over stdio and Streamable HTTP, errors that always carry code/cause/fix/retryable, 402 payment gating, and generators for server.json, llms.txt and pricing.json.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agentwares/libs",
+    "directory": "packages/mcp-kit"
+  },
+  "homepage": "https://github.com/agentwares/libs/tree/main/packages/mcp-kit#readme",
+  "bugs": {
+    "url": "https://github.com/agentwares/libs/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mcp-server",
+    "streamable-http",
+    "stdio",
+    "ai-agents",
+    "tools",
+    "zod",
+    "llms-txt",
+    "x402"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "example:http": "pnpm build && node dist/example-http.js",
+    "conformance": "node scripts/conformance.mjs"
+  },
+  "dependencies": {
+    "@agentwares/x402": "workspace:^",
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "zod": "^4.5.4"
+  }
+}

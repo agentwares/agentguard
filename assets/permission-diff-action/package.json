@@ -1,0 +1,8 @@
+{
+  "name": "@agentwares/permission-diff-action",
+  "version": "0.1.0",
+  "private": true,
+  "description": "GitHub Action that comments on pull requests widening agentguard.yaml caps or allowlists, .claude/settings.json permissions, or mcp.json servers.",
+  "license": "MIT",
+  "type": "module"
+}
