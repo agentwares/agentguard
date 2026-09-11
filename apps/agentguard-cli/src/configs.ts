@@ -135,6 +135,9 @@ export function readServers(file: ClientConfigFile): Record<string, ServerEntry>
 
 export const PROXY_SERVER_NAME = "agentguard";
 
+/** What `npx` is told to fetch. Must be the published package name. */
+export const PROXY_PACKAGE = "@agentwares/agentguard";
+
 export function isProxyEntry(entry: ServerEntry): boolean {
   return (
     (entry.args ?? []).some((a) => a === "agentguard" || /(^|\/)agentguard(\.js)?$/.test(a)) &&
@@ -194,7 +197,11 @@ export function proxyEntry(
   policyPath: string,
   opts: { agent?: string } = {},
 ): ServerEntry {
-  const args = ["-y", "agentguard", "proxy", "--config", policyPath];
+  // The published name, scope and all. `npx -y agentguard` 404s — that package does not
+  // exist — so every config this wrote failed to start the proxy, and the line printed next
+  // to it already said `npx @agentwares/agentguard proxy`. Worse than broken: the unscoped
+  // name is unclaimed, so anyone who took it would have their code run by our onboarding.
+  const args = ["-y", PROXY_PACKAGE, "proxy", "--config", policyPath];
   if (opts.agent) args.push("--agent", opts.agent);
   const entry: ServerEntry = { command: "npx", args };
   if (file.serversKey === "servers") entry.type = "stdio";
@@ -223,4 +230,27 @@ export function restoreClientConfig(file: ClientConfigFile): boolean {
   if (!existsSync(backup)) return false;
   copyFileSync(backup, file.path);
   return true;
+}
+
+/**
+ * Add (or replace) one named server in a client config, leaving every other server alone.
+ *
+ * `rewriteClientConfig` is the `init` path: it replaces the whole server list with the local
+ * proxy. `connect` is the opposite shape — the hosted proxy is one more remote server sitting
+ * alongside whatever the client already has — so it merges instead of replacing. Both back the
+ * file up once before touching it, so `init --undo` still restores either.
+ */
+export function mergeServerIntoConfig(
+  file: ClientConfigFile,
+  name: string,
+  entry: ServerEntry,
+): { backup: string; replaced: boolean } {
+  const raw = JSON.parse(readFileSync(file.path, "utf8")) as Record<string, unknown>;
+  const servers = (raw[file.serversKey] as Record<string, ServerEntry> | undefined) ?? {};
+  const replaced = name in servers;
+  const backup = backupPath(file);
+  if (!existsSync(backup)) copyFileSync(file.path, backup);
+  raw[file.serversKey] = { ...servers, [name]: entry };
+  writeFileSync(file.path, JSON.stringify(raw, null, 2) + "\n");
+  return { backup, replaced };
 }

@@ -1,16 +1,27 @@
 {
-  "name": "agentguard-workspace",
+  "name": "agentwares-agentguard",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@9.15.9",
   "engines": {
     "node": ">=22"
   },
+  "description": "MCP policy proxy for AI agents: hard spend limits, destructive-action approvals, kill switch, scoped keys, dry-run diffs, loop breaker, hash-chained audit log.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agentwares/agentguard"
+  },
   "scripts": {
-    "build": "turbo build",
-    "test": "turbo test",
-    "typecheck": "turbo typecheck",
-    "lint": "turbo lint"
+    "build": "pnpm -r --workspace-concurrency=1 build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
+    "pretest": "pnpm run build",
+    "pretypecheck": "pnpm run build"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -18,7 +29,6 @@
     "eslint": "^10.9.1",
     "prettier": "^3.9.6",
     "tsup": "^8.5.1",
-    "turbo": "^2.10.12",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.69.0",
     "vitest": "^4.1.11"

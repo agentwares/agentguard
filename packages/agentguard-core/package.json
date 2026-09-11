@@ -1,6 +1,6 @@
 {
   "name": "@agentwares/agentguard-core",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Policy engine behind agentguard: spend caps, destructive-action gating with approvals, kill switch, scoped agent keys, dry-run writes, semantic loop breaker, blast-radius caps and a hash-chained audit log. Web-standard core, Node stores under ./node.",
   "license": "MIT",
   "type": "module",

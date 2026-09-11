@@ -1,24 +1,9 @@
-# deps / build
 node_modules/
-.turbo/
 dist/
-.next/
-out/
 coverage/
 *.tsbuildinfo
-.wrangler/
-.vercel/
-
-# env / secrets — never commit
+.turbo/
+.DS_Store
 .env
 .env.*
 !.env.example
-!.env.local.example
-
-# os / editor
-.DS_Store
-.idea/
-.vscode/*
-!.vscode/extensions.json
-.vercel
-.scratch/

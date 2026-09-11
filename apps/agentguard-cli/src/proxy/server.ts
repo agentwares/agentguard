@@ -29,9 +29,15 @@ import {
   type GuardErrorBody,
   type GuardResult,
 } from "@agentwares/agentguard-core";
+import { version as cliVersion } from "../version.js";
 import type { DownstreamSession, ExposedTool, ProxyRuntime } from "./runtime.js";
 
-export const PROXY_VERSION = "0.1.0";
+/**
+ * Reported to every MCP client in `serverInfo`. Derived from package.json rather than written
+ * out, because a hand-maintained copy drifts: this said 0.1.0 while npm served 0.1.2, so a
+ * client could not tell which build it was talking to.
+ */
+export const PROXY_VERSION = cliVersion();
 
 type Extra = RequestHandlerExtra<ServerRequest, ServerNotification>;
 

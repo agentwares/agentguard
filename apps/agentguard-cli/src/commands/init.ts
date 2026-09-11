@@ -285,6 +285,18 @@ export async function initCommand(args: ParsedArgs, io: Io): Promise<number> {
 
   if (flagBool(args, "rewrite") !== false) {
     for (const c of chosen) {
+      // `--config` names the policy file, and `--client` names the client's. Point both at the
+      // same file — easy, because an MCP client's file is also called a config — and the
+      // rewrite replaces the policy with the proxy entry and then points the proxy at that.
+      // The upstreams survive only in the backup, and the proxy starts with nothing to guard.
+      if (resolve(c.path) === resolve(policyPath)) {
+        throw new Error(
+          `refusing: ${rel(c.path)} is both the policy file (--config) and a client config. ` +
+            `Rewriting it would replace the policy with the proxy entry and leave the proxy ` +
+            `pointing at itself. Use --config for the policy path and --client for the ` +
+            `client's config, or let --config default to agentguard.yaml.`,
+        );
+      }
       const { backup, replaced } = rewriteClientConfig(c, policyPath, {
         agent: flagString(args, "agent"),
       });

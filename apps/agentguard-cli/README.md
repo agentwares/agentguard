@@ -3,7 +3,7 @@
 **60 seconds to a safe first run.** Your agent already has an MCP config. Put agentguard in front of it, run the agent once in dry-run, and read what it _would_ have done:
 
 ```sh
-npx @agentwares/agentguard init          # reads .mcp.json / Cursor / VS Code config, writes agentguard.yaml (dry-run), routes every server through the proxy
+npx @agentwares/agentguard init          # finds your MCP config, writes agentguard.yaml (dry-run), routes every server through the proxy
 # restart your MCP client, run your agent as usual — writes are faked, nothing executes upstream
 npx @agentwares/agentguard report        # "would have deleted 12 records, sent 5 emails, spent $140 — halted a loop at call 31"
 npx @agentwares/agentguard diff          # the record-by-record mutation diff
@@ -45,7 +45,9 @@ Two install paths, one policy engine: the **MCP proxy** (`npx @agentwares/agentg
 ## Install
 
 ```sh
-npx @agentwares/agentguard init                                  # in the directory with your .mcp.json / .cursor/mcp.json / .vscode/mcp.json
+npx @agentwares/agentguard init                                  # rewrites the first project-level config it finds
+npx @agentwares/agentguard init --all                            # ...or every config: .mcp.json, .cursor/mcp.json, .vscode/mcp.json
+npx @agentwares/agentguard init --client ~/.claude.json          # a user-level config, which --all still leaves alone
 npx @agentwares/agentguard init --client ~/Library/Application\ Support/Claude/claude_desktop_config.json   # user-level configs only with --client
 npx @agentwares/agentguard init --undo                           # restore the backup
 ```
@@ -149,7 +151,22 @@ Run identity: `X-Run-Id` header (HTTP) → `_meta.runId` on the call → session
 | `agentguard kill [reason]` / `agentguard resume`                                                                                | halt everything now / clear it                                                                                                                          |
 | `agentguard approvals [--all]` / `approve <id>` / `deny <id> [--note …]`                                                        | the approval queue                                                                                                                                      |
 | `agentguard key create <agent> [--allow p]… [--deny p] [--writes n] [--spend n] [--mode m]` / `key list` / `key revoke <agent>` | scoped credentials                                                                                                                                      |
+| `agentguard connect <key> [--write] [--client path] [--all] [--url base]`                                                       | point this machine's MCP client at a hosted proxy (paid tiers); prints the config, `--write` merges it in                                               |
 | `agentguard permission-diff [--base ref] [--head ref] [--fail-on-widen]`                                                        | which config changes widen agent permissions (also a [GitHub Action](https://github.com/agentwares/agentguard/tree/main/assets/permission-diff-action)) |
+
+### Hosted tiers
+
+The CLI enforces policy on your machine and needs no account. The paid tiers move enforcement
+server-side — shared state across machines, retained audit, alerting — and `connect` is how you
+point a client at yours:
+
+```sh
+npx @agentwares/agentguard connect agk_...            # print the MCP server block
+npx @agentwares/agentguard connect agk_... --write    # merge it into your MCP config (existing servers are kept)
+```
+
+Unlike `init`, `connect` adds one remote server and leaves the rest of your config alone. The key
+comes from your dashboard; everything else — proxy URL, mode, band — is answered by the server.
 
 HTTP control endpoints (token in `.agentguard/http.json`): `GET /health`, `GET /status?run=`, `POST /kill`, `POST /resume`, `GET|POST /approve/:id`, `/deny/:id`, `GET /approvals`.
 

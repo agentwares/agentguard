@@ -1,6 +1,6 @@
 {
   "name": "@agentwares/agentguard-sdk",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "agentguard for tool calls that bypass MCP: wrap OpenAI Agents SDK, LangChain or plain function tools with the same policy engine (spend caps, approvals, kill switch, dry-run, loop breaker, audit log) and cap LLM spend with a guarded fetch.",
   "license": "MIT",
   "type": "module",

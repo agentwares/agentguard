@@ -1,6 +1,6 @@
 {
   "name": "@agentwares/agentguard",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "MCP policy proxy for AI agents: hard spend limits, destructive-action gating with approvals, a kill switch, scoped credentials, dry-run writes with mutation diffs, loop breaker, blast-radius caps and a hash-chained audit log. No LLM calls, no phone-home, no account.",
   "license": "MIT",
   "type": "module",
@@ -63,8 +63,8 @@
     "zod": "^4.5.4"
   },
   "devDependencies": {
-    "@agentwares/mcp-kit": "workspace:^",
-    "@agentwares/notify": "workspace:^",
+    "@agentwares/mcp-kit": "^0.2.0",
+    "@agentwares/notify": "^0.1.1",
     "tsx": "^4.23.13"
   },
   "bugs": {

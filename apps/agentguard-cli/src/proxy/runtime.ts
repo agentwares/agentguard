@@ -4,6 +4,7 @@
  * `callTool` through the policy engine.
  */
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { version as cliVersion } from "../version.js";
 import {
   getDefaultEnvironment,
   StdioClientTransport,
@@ -168,7 +169,7 @@ export class ProxyRuntime {
 
   private async connect(upstream: Upstream): Promise<void> {
     const client = new Client(
-      { name: "agentguard", version: "0.1.0" },
+      { name: "agentguard", version: cliVersion() },
       { capabilities: { sampling: {}, elicitation: {} } },
     );
     const conn: Connection = {

@@ -1,3 +1,4 @@
+import { PROXY_PACKAGE } from "../configs.js";
 /**
  * CLI commands against a temp directory: init (config rewrite + starter policy), report, diff,
  * verify, status, kill/resume, approvals, key create, permission-diff on a fixture git repo.
@@ -74,7 +75,9 @@ describe("init", () => {
     expect(Object.keys(rewritten.mcpServers)).toEqual(["agentguard"]);
     expect(rewritten.mcpServers.agentguard).toMatchObject({
       command: "npx",
-      args: ["-y", "agentguard", "proxy", "--config", join(dir, "agentguard.yaml")],
+      // The published name. The unscoped one 404s on npm, so the config it wrote could
+      // never start, and the name is unclaimed by anyone else.
+      args: ["-y", "@agentwares/agentguard", "proxy", "--config", join(dir, "agentguard.yaml")],
     });
     expect(existsSync(join(dir, ".mcp.json.agentguard-backup"))).toBe(true);
     expect(out.join("\n")).toContain("agentguard report");
@@ -384,5 +387,17 @@ describe("permission-diff", () => {
     out = [];
     expect(await main(["permission-diff", "--base", "HEAD", "--head", "HEAD"], io)).toBe(0);
     expect(out.join("\n")).toContain("No permission changes");
+  });
+});
+
+describe("the package name written into a user's config", () => {
+  it("is this package's own published name", async () => {
+    // It said `agentguard`, which is not on npm, so every config init wrote failed to start —
+    // and the unscoped name is unclaimed, so whoever registers it gets their code fetched by
+    // our onboarding. Pinning it to package.json means it cannot drift again.
+    const pkg = JSON.parse(
+      readFileSync(new URL("../../package.json", import.meta.url), "utf8"),
+    ) as { name: string };
+    expect(PROXY_PACKAGE).toBe(pkg.name);
   });
 });

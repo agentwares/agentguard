@@ -4,9 +4,12 @@
  * a kill switch, scoped credentials, dry-run writes, a loop breaker, blast-radius caps and a
  * hash-chained audit log. No LLM calls, no phone-home, no account.
  */
-import { readFileSync } from "node:fs";
 import { parseArgs, type ParsedArgs } from "./args.js";
+import { version } from "./version.js";
+
+export { version };
 import { defaultIo, describeError, type Io } from "./context.js";
+import { connectCommand } from "./commands/connect.js";
 import { approvalsCommand, decideCommand, killCommand, resumeCommand } from "./commands/control.js";
 import { initCommand } from "./commands/init.js";
 import { keyCommand } from "./commands/keys.js";
@@ -15,24 +18,13 @@ import { proxyCommand } from "./commands/proxy.js";
 import { diffCommand, reportCommand, statusCommand, verifyCommand } from "./commands/report.js";
 import { toolsCommand } from "./commands/tools.js";
 
-export function version(): string {
-  try {
-    return (
-      JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")) as {
-        version: string;
-      }
-    ).version;
-  } catch {
-    return "0.0.0";
-  }
-}
-
 export const HELP = `agentguard — MCP policy proxy for agents that touch production
 
   npx @agentwares/agentguard init                 read your MCP config, write agentguard.yaml (dry-run), route every server through the proxy
   agentguard report [--run id|--all]  what this run did / would have destroyed / spent, where it was halted
   agentguard diff [--run id]          record-by-record mutation diff from a dry run
   agentguard verify [audit.jsonl]     prove the hash-chained audit log was not edited
+  agentguard connect <key> [--write]  point this machine at your hosted proxy (paid tiers)
 
   agentguard proxy [--http --port 8788] [--agent name] [--run-id id] [--mode dry-run|enforce]
   agentguard tools [--json]           the tools your agent will see, with class and why
@@ -80,6 +72,8 @@ export async function main(argv: readonly string[], io: Io = defaultIo()): Promi
         return await diffCommand(args, io);
       case "verify":
         return await verifyCommand(args, io);
+      case "connect":
+        return await connectCommand(args, io);
       case "status":
         return await statusCommand(args, io);
       case "tools":
